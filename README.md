@@ -10,7 +10,7 @@ As a budding software engineer, I understand the importance of a solid foundatio
 
 ## 📂 What's Inside?
 
-The repository is structured into various sections, each dedicated to a specific type of data structure or algorithm:
+The repository is structured into various sections, each dedicated to a specific type of data structure or algorithm: (Some topics below are yet to be published to GIT as we make progress).
 
 - **Basic Data Structures:** Includes Arrays, Linked Lists, Stacks, and Queues.
 - **Advanced Structures:** Focus on Trees, Graphs, Heaps, and more.
