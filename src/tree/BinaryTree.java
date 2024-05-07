@@ -20,6 +20,8 @@ public class BinaryTree {
 
         System.out.println("Beginning of Level Order Traversal");
         levelOrderTraversal(root);
+
+        System.out.println("Count of Nodes : " + countOfNodes(root));
     }
 
     static Node createBinaryTree(int[] array){
@@ -73,6 +75,13 @@ public class BinaryTree {
         inOrderTraversal(root.left);
         System.out.println(root.data);
         inOrderTraversal(root.right);
+    }
+
+    static int countOfNodes(Node root){
+        if(root == null) return 0;
+        int leftCount = countOfNodes(root.left);
+        int rightCount = countOfNodes(root.right);
+        return leftCount + rightCount + 1;
     }
 }
 
