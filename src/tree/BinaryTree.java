@@ -1,5 +1,8 @@
 package tree;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class BinaryTree {
     static int idx = -1;
     public static void main(String[] args) {
@@ -14,6 +17,9 @@ public class BinaryTree {
 
         System.out.println("Beginning of in Order Traversal");
         inOrderTraversal(root);
+
+        System.out.println("Beginning of Level Order Traversal");
+        levelOrderTraversal(root);
     }
 
     static Node createBinaryTree(int[] array){
@@ -41,6 +47,25 @@ public class BinaryTree {
         postOrderTraversal(root.left);
         postOrderTraversal(root.right);
         System.out.println(root.data);
+    }
+
+    static void levelOrderTraversal(Node root){
+        if(root == null) return;
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+
+        while(!q.isEmpty()){
+            Node current = q.poll();
+            System.out.println(current.data);
+
+            if(current.left != null){
+                q.add(current.left);
+            }
+
+            if(current.right != null){
+                q.add(current.right);
+            }
+        }
     }
 
     static void inOrderTraversal(Node root){
