@@ -25,6 +25,9 @@ public class BinaryTree {
         System.out.println("Sum of Nodes : " + sumOfNodes(root));
 
         System.out.println("Height of a tree : " + heightOfATree(root));
+
+        System.out.println("Diameter of a tree, Naive n^2 solution: " + diameterNaiveSolution(root));
+        System.out.println("Diameter of a tree, Naive O(N) solution: : " + diameterOptimizedSolution(root).diameter);
     }
 
     static Node createBinaryTree(int[] array){
@@ -98,6 +101,45 @@ public class BinaryTree {
         int rightHeight = heightOfATree(root.right);
         return Math.max(leftHeight, rightHeight) + 1;
     }
+
+    static int diameterNaiveSolution(Node root){
+        if(root == null) return 0;
+        int leftDiameter = diameterNaiveSolution(root.left);
+        int rightDiameter = diameterNaiveSolution(root.right);
+        int diameterWithRoot = heightOfATree(root.left) + heightOfATree(root.right) + 1;
+        return Math.max(diameterWithRoot, Math.max(leftDiameter, rightDiameter));
+    }
+
+    static TreeInfo diameterOptimizedSolution(Node root){
+        if(root == null) {
+            return new TreeInfo(0, 0);
+        }
+        TreeInfo leftTreeInfo = diameterOptimizedSolution(root.left);
+        TreeInfo rightTreeInfo = diameterOptimizedSolution(root.right);
+
+        int leftDiameter = leftTreeInfo.diameter;
+        int rightDiameter = rightTreeInfo.diameter;
+        int d3 = leftTreeInfo.height + rightTreeInfo.height + 1;
+        int height = Math.max(leftTreeInfo.height, rightTreeInfo.height) + 1;
+
+        int diam = Math.max(Math.max(leftDiameter, rightDiameter), d3);
+        TreeInfo treeInfo = new TreeInfo(height, diam);
+        return treeInfo;
+
+
+
+    }
+}
+
+class TreeInfo {
+
+    int height;
+    int diameter;
+
+    TreeInfo(int height, int diameter){
+        this.height = height;
+        this.diameter = diameter;
+    }
 }
 
 class Node{
@@ -109,3 +151,4 @@ class Node{
         this.data = data;
     }
 }
+
