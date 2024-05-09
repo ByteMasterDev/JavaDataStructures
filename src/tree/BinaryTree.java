@@ -28,6 +28,8 @@ public class BinaryTree {
 
         System.out.println("Diameter of a tree, Naive n^2 solution: " + diameterNaiveSolution(root));
         System.out.println("Diameter of a tree, Naive O(N) solution: : " + diameterOptimizedSolution(root).diameter);
+
+        System.out.println("Sum of nodes at kth level i.e level 3 : " + sumOfNodesAtKthLevel(root, 2));
     }
 
     static Node createBinaryTree(int[] array){
@@ -125,9 +127,42 @@ public class BinaryTree {
         int diam = Math.max(Math.max(leftDiameter, rightDiameter), d3);
         TreeInfo treeInfo = new TreeInfo(height, diam);
         return treeInfo;
+    }
 
+    static boolean isSubtree(Node rootNode, Node subtreeNode){
+        if (rootNode == null && subtreeNode == null) return true;
+        if (rootNode == null) return false;
+        if (subtreeNode == null) return true;
+        return checkForSubtree(rootNode, subtreeNode);
+    }
 
+    static boolean checkForSubtree(Node rootNode, Node subtreeNode){
+        if (rootNode == null) return false;
+        if (rootNode.data == subtreeNode.data && matchTree(rootNode, subtreeNode)) {
+            return true;
+        }
+        return checkForSubtree(rootNode.left, subtreeNode) || checkForSubtree(rootNode.right, subtreeNode);
+    }
 
+    static boolean matchTree(Node rootNode, Node subtreeNode){
+        if (rootNode == null && subtreeNode == null) return true;
+        if (rootNode == null || subtreeNode == null) return false;
+        return rootNode.data == subtreeNode.data
+                && matchTree(rootNode.left, subtreeNode.left)
+                && matchTree(rootNode.right, subtreeNode.right);
+    }
+
+    static int count = 1;
+
+    static int sumOfNodesAtKthLevel(Node root, int k) {
+        if (root == null) {
+            return 0; // Base case
+        }
+        if (k == 0) {
+            return root.data;
+        }
+
+        return sumOfNodesAtKthLevel(root.left, k - 1) + sumOfNodesAtKthLevel(root.right, k - 1);
     }
 }
 
