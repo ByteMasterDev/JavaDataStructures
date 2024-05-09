@@ -1,6 +1,8 @@
 package tree;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class BinaryTree {
@@ -29,6 +31,8 @@ public class BinaryTree {
         System.out.println("Sum of nodes at kth level i.e level 3 : " + sumOfNodesAtKthLevel(root, 2));
         System.out.println("Size of a Binary Tree : " + sizeOfABinaryTree(root));
         System.out.println("Maximum in Binary Tree : " + maximumInBinaryTree(root));
+        System.out.println("Left View of a Binary Tree");
+        printLeftView(root, new ArrayList<>(), 0);
     }
 
     static Node createBinaryTree(int[] array){
@@ -169,6 +173,16 @@ public class BinaryTree {
         int leftVal = maximumInBinaryTree(root.left);
         int rightVal = maximumInBinaryTree(root.right);
         return Math.max(root.data, Math.max(leftVal, rightVal));
+    }
+
+    static void printLeftView(Node root, List<Boolean> levelsPrinted, int level){
+        if(root == null) return;
+        if (level >= levelsPrinted.size()) {
+            System.out.println(root.data);
+            levelsPrinted.add(true);
+        }
+        printLeftView(root.left, levelsPrinted, level + 1);
+        printLeftView(root.right, levelsPrinted, level + 1);
     }
 }
 
