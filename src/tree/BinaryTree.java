@@ -23,15 +23,12 @@ public class BinaryTree {
 
         System.out.println("Count of Nodes : " + countOfNodes(root));
         System.out.println("Sum of Nodes : " + sumOfNodes(root));
-
         System.out.println("Height of a tree : " + heightOfATree(root));
-
         System.out.println("Diameter of a tree, Naive n^2 solution: " + diameterNaiveSolution(root));
         System.out.println("Diameter of a tree, Naive O(N) solution: : " + diameterOptimizedSolution(root).diameter);
-
         System.out.println("Sum of nodes at kth level i.e level 3 : " + sumOfNodesAtKthLevel(root, 2));
-
         System.out.println("Size of a Binary Tree : " + sizeOfABinaryTree(root));
+        System.out.println("Maximum in Binary Tree : " + maximumInBinaryTree(root));
     }
 
     static Node createBinaryTree(int[] array){
@@ -165,6 +162,13 @@ public class BinaryTree {
         int leftSize = sizeOfABinaryTree(root.left);
         int rightSize = sizeOfABinaryTree(root.right);
         return leftSize + rightSize + 1;
+    }
+
+    static int maximumInBinaryTree(Node root){
+        if(root == null) return Integer.MIN_VALUE;
+        int leftVal = maximumInBinaryTree(root.left);
+        int rightVal = maximumInBinaryTree(root.right);
+        return Math.max(root.data, Math.max(leftVal, rightVal));
     }
 }
 
