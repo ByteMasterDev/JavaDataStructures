@@ -30,6 +30,8 @@ public class BinaryTree {
         System.out.println("Diameter of a tree, Naive O(N) solution: : " + diameterOptimizedSolution(root).diameter);
 
         System.out.println("Sum of nodes at kth level i.e level 3 : " + sumOfNodesAtKthLevel(root, 2));
+
+        System.out.println("Size of a Binary Tree : " + sizeOfABinaryTree(root));
     }
 
     static Node createBinaryTree(int[] array){
@@ -152,17 +154,17 @@ public class BinaryTree {
                 && matchTree(rootNode.right, subtreeNode.right);
     }
 
-    static int count = 1;
-
     static int sumOfNodesAtKthLevel(Node root, int k) {
-        if (root == null) {
-            return 0; // Base case
-        }
-        if (k == 0) {
-            return root.data;
-        }
-
+        if (root == null) return 0; // Base case
+        if (k == 0) return root.data;
         return sumOfNodesAtKthLevel(root.left, k - 1) + sumOfNodesAtKthLevel(root.right, k - 1);
+    }
+
+    static int sizeOfABinaryTree(Node root){
+        if(root == null) return 0;
+        int leftSize = sizeOfABinaryTree(root.left);
+        int rightSize = sizeOfABinaryTree(root.right);
+        return leftSize + rightSize + 1;
     }
 }
 
