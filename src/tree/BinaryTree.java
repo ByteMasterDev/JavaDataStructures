@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.stream.IntStream;
 
 public class BinaryTree {
     static int idx = -1;
@@ -35,6 +36,7 @@ public class BinaryTree {
         printLeftView(root, new ArrayList<>(), 0);
         System.out.println("Is Child Sum equals Parent : " + childSumProperty(root));
         System.out.println("Is a Balanced Tree : " + isBalancedTree(root));
+        System.out.println("Max Width Of A Tree : " +maxWidthOfATree(root));
     }
 
     static Node createBinaryTree(int[] array){
@@ -210,6 +212,29 @@ public class BinaryTree {
         return Math.abs(leftHeight - rightHeight) < 2
                 && isBalancedTree(root.left)
                 && isBalancedTree(root.right);
+    }
+
+    static int maxWidthOfATree(Node root){
+        if(root == null) return 0;
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+
+        int result = 0;
+        while(!q.isEmpty()){
+            int qSize = q.size();
+            for(int i=0; i<qSize; i++){
+               Node current = q.poll();
+               if(current.left != null){
+                   q.add(current.left);
+               }
+                if(current.right != null){
+                    q.add(current.right);
+                }
+            }
+            result = Math.max(qSize, result);
+        }
+
+        return result;
     }
 }
 
