@@ -33,6 +33,7 @@ public class BinaryTree {
         System.out.println("Maximum in Binary Tree : " + maximumInBinaryTree(root));
         System.out.println("Left View of a Binary Tree");
         printLeftView(root, new ArrayList<>(), 0);
+        System.out.println("Is Child Sum equals Parent : " + childSumProperty(root));
     }
 
     static Node createBinaryTree(int[] array){
@@ -183,6 +184,22 @@ public class BinaryTree {
         }
         printLeftView(root.left, levelsPrinted, level + 1);
         printLeftView(root.right, levelsPrinted, level + 1);
+    }
+
+    static boolean childSumProperty(Node root){
+        if(root == null) return true;
+        if(root.right == null && root.left == null) return true;
+        int leftVal = 0;
+        int rightVal = 0;
+        if(root.left != null){
+            leftVal = root.left.data;
+        }
+        if(root.right != null){
+            rightVal = root.right.data;
+        }
+        return leftVal + rightVal == root.data
+                && childSumProperty(root.left)
+                && childSumProperty(root.right);
     }
 }
 
