@@ -34,6 +34,7 @@ public class BinaryTree {
         System.out.println("Left View of a Binary Tree");
         printLeftView(root, new ArrayList<>(), 0);
         System.out.println("Is Child Sum equals Parent : " + childSumProperty(root));
+        System.out.println("Is a Balanced Tree : " + isBalancedTree(root));
     }
 
     static Node createBinaryTree(int[] array){
@@ -200,6 +201,15 @@ public class BinaryTree {
         return leftVal + rightVal == root.data
                 && childSumProperty(root.left)
                 && childSumProperty(root.right);
+    }
+
+    static boolean isBalancedTree(Node root){
+        if(root == null) return true;
+        int leftHeight = heightOfATree(root.left);
+        int rightHeight = heightOfATree(root.right);
+        return Math.abs(leftHeight - rightHeight) < 2
+                && isBalancedTree(root.left)
+                && isBalancedTree(root.right);
     }
 }
 
