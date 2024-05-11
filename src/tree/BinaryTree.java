@@ -7,6 +7,8 @@ import java.util.Queue;
 
 public class BinaryTree {
     static int idx = -1;
+    private static int preOrderIdx = 0;
+
     public static void main(String[] args) {
         int[] array = {1,2,4,-1,-1,5,-1,-1,3,-1,6,-1,-1};
         Node root = createBinaryTree(array);
@@ -50,6 +52,13 @@ public class BinaryTree {
 
         // Print the doubly linked list
         printDoublyLinkedList(head);
+
+        System.out.print("Construct Tree Using Inorder and Preorder array: ");
+        int[] inOrder = {4, 2, 5, 1, 6, 3, 7};
+        int[] preOrder = {1, 2, 4, 5, 3, 6, 7};
+        Node btRoot = constructBTFromInOrderAndPreOrder(inOrder, preOrder, 0, inOrder.length - 1);
+        System.out.print("In-order of constructed tree: ");
+        printInOrder(btRoot);
     }
 
     static Node createBinaryTree(int[] array){
@@ -273,6 +282,30 @@ public class BinaryTree {
             current = current.right;
         }
     }
+
+    static Node constructBTFromInOrderAndPreOrder(int[] inOrder, int[] preOrder, int si, int ei){
+        if(si > ei) return null;
+        Node root = new Node(preOrder[preOrderIdx]);
+        preOrderIdx++;
+        int idxOfElementInOrder = 0;
+        for(int i=si; i<=ei; i++){
+            if(inOrder[i] == root.data){
+                idxOfElementInOrder = i;
+                break;
+            }
+        }
+        root.left = constructBTFromInOrderAndPreOrder(inOrder, preOrder, si, idxOfElementInOrder - 1);
+        root.right = constructBTFromInOrderAndPreOrder(inOrder, preOrder, idxOfElementInOrder + 1, ei);
+        return root;
+    }
+
+    public static void printInOrder(Node btRoot) {
+        if (btRoot != null) {
+            printInOrder(btRoot.left);
+            System.out.print(btRoot.data + " ");
+            printInOrder(btRoot.right);
+        }
+    }
 }
 
 class TreeInfo {
@@ -285,9 +318,6 @@ class TreeInfo {
         this.diameter = diameter;
     }
 }
-
-
-
 
 class Node{
     int data;
