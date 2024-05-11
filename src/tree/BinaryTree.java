@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.stream.IntStream;
 
 public class BinaryTree {
     static int idx = -1;
@@ -37,6 +36,20 @@ public class BinaryTree {
         System.out.println("Is Child Sum equals Parent : " + childSumProperty(root));
         System.out.println("Is a Balanced Tree : " + isBalancedTree(root));
         System.out.println("Max Width Of A Tree : " +maxWidthOfATree(root));
+
+
+        System.out.println("Construct Binary Tree to Doubly Linked List : ");
+        Node rootDLL = new Node(4);
+        rootDLL.left = new Node(2);
+        rootDLL.right = new Node(5);
+        rootDLL.left.left = new Node(1);
+        rootDLL.left.right = new Node(3);
+
+        // Convert to a doubly linked list
+        Node head = constructBinaryTreeToDoublyLinkedList(rootDLL);
+
+        // Print the doubly linked list
+        printDoublyLinkedList(head);
     }
 
     static Node createBinaryTree(int[] array){
@@ -236,6 +249,30 @@ public class BinaryTree {
 
         return result;
     }
+
+    static Node prev;
+    static Node constructBinaryTreeToDoublyLinkedList(Node root){
+        if(root == null) return null;
+        Node head = constructBinaryTreeToDoublyLinkedList(root.left);
+        if(prev == null){
+            head = root;
+        }else{
+            root.left = prev;
+            prev.right = root;
+        }
+
+        prev = root;
+        constructBinaryTreeToDoublyLinkedList(root.right);
+        return head;
+    }
+
+    static void printDoublyLinkedList(Node head) {
+        Node current = head;
+        while (current != null) {
+            System.out.print(current.data + " ");
+            current = current.right;
+        }
+    }
 }
 
 class TreeInfo {
@@ -249,6 +286,9 @@ class TreeInfo {
     }
 }
 
+
+
+
 class Node{
     int data;
     Node left;
@@ -258,4 +298,6 @@ class Node{
         this.data = data;
     }
 }
+
+
 
