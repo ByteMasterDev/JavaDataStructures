@@ -71,6 +71,14 @@ public class BinaryTree {
         } else {
             System.out.println("No LCA found.");
         }
+
+        System.out.print("LCA of Binary Tree Optimized Solution: ");
+        Node lcaOptimized = lowestCommonAncestorOptimized(root, 2, 5);
+        if (lcaOptimized != null) {
+            System.out.println("LCA(2, 5): " + lcaOptimized.data);
+        } else {
+            System.out.println("No LCA found.");
+        }
     }
 
     static Node createBinaryTree(int[] array){
@@ -374,6 +382,20 @@ public class BinaryTree {
         }
         ls.remove(ls.size()-1);
         return false;
+   }
+
+   static Node lowestCommonAncestorOptimized(Node root, int valOne, int valTwo) {
+        if(root == null) return null;
+        if(root.data == valOne || root.data == valTwo) return root;
+        Node left = lowestCommonAncestorOptimized(root.left, valOne, valTwo);
+        Node right = lowestCommonAncestorOptimized(root.right, valOne, valTwo);
+        if(left != null && right != null) return root;
+        if(left != null){
+            return left;
+        }
+        else {
+            return right;
+        }
    }
 }
 
