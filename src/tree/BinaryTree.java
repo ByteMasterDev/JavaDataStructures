@@ -1,9 +1,7 @@
 package tree;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
+import java.util.stream.IntStream;
 
 public class BinaryTree {
     static int idx = -1;
@@ -59,6 +57,10 @@ public class BinaryTree {
         Node btRoot = constructBTFromInOrderAndPreOrder(inOrder, preOrder, 0, inOrder.length - 1);
         System.out.print("In-order of constructed tree: ");
         printInOrder(btRoot);
+
+        System.out.print("Zig Zag Traversal of Binary Tree: ");
+        binaryTreeZigZagTraversal(root);
+
     }
 
     static Node createBinaryTree(int[] array){
@@ -304,6 +306,40 @@ public class BinaryTree {
             printInOrder(btRoot.left);
             System.out.print(btRoot.data + " ");
             printInOrder(btRoot.right);
+        }
+    }
+
+    static void binaryTreeZigZagTraversal(Node root) {
+        if(root == null) return;
+        boolean reverseFlag = false;
+
+        Queue<Node> q = new LinkedList<>();
+        Stack<Integer> s = new Stack<>();
+        q.add(root);
+
+        while(!q.isEmpty()){
+            int qSize = q.size();
+            for(int i=0; i<qSize; i++){
+                Node current = q.poll();
+                if(reverseFlag){
+                    s.add(current.data);
+                }else{
+                    System.out.println(current.data);
+                }
+                if(current.left != null){
+                    q.add(current.left);
+                }
+                if(current.right != null){
+                    q.add(current.right);
+                }
+            }
+
+            if(reverseFlag){
+                while(!s.isEmpty()){
+                    System.out.println(s.pop());
+                }
+            }
+            reverseFlag = !reverseFlag;
         }
     }
 }
