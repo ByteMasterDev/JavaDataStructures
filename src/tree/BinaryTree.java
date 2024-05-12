@@ -1,7 +1,10 @@
 package tree;
 
-import java.util.*;
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
 
 public class BinaryTree {
     static int idx = -1;
@@ -61,6 +64,13 @@ public class BinaryTree {
         System.out.print("Zig Zag Traversal of Binary Tree: ");
         binaryTreeZigZagTraversal(root);
 
+        System.out.print("LCA of Binary Tree Naive Solution: ");
+        Node lca = lowestCommonAncestor(root, 2, 5);
+        if (lca != null) {
+            System.out.println("LCA(2, 5): " + lca.data);
+        } else {
+            System.out.println("No LCA found.");
+        }
     }
 
     static Node createBinaryTree(int[] array){
@@ -342,6 +352,29 @@ public class BinaryTree {
             reverseFlag = !reverseFlag;
         }
     }
+
+    static Node lowestCommonAncestor(Node root, int valOne, int valTwo){
+        List<Node> pathOne = new ArrayList<>();
+        List<Node> pathTwo = new ArrayList<>();
+
+        if(!findPath(root, pathOne, valOne) || !findPath(root, pathTwo, valTwo)) return null;
+
+        for(int i=0; i<pathOne.size() - 1 && i<pathTwo.size() - 1; i++) {
+            if(pathOne.get(i+1) != pathTwo.get(i+1)) return pathOne.get(i);
+        }
+        return null;
+    }
+
+   static boolean findPath(Node root, List<Node> ls, int val) {
+        if(root == null) return false;
+        if(root.data == val) return true;
+        ls.add(root);
+        if(findPath(root.left, ls, val) || findPath(root.right, ls, val)){
+            return true;
+        }
+        ls.remove(ls.size()-1);
+        return false;
+   }
 }
 
 class TreeInfo {
