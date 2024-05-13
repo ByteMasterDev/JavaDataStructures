@@ -79,6 +79,21 @@ public class BinaryTree {
         } else {
             System.out.println("No LCA found.");
         }
+
+        System.out.println("Time to Burn A Tree :" +timeToBurnABinaryTree(root, 2));
+        System.out.println("Time to Burn A Tree :" +timeToBurnABinaryTree(root, 2));
+        System.out.println("Count Nodes in a complete binary tree naive solution :" + countNodesInCompleteBinaryTree(root));
+        System.out.println("Count Nodes in a complete binary tree Optimized solution :" + countNodesInCompleteBinaryTreeOptimized(root));
+
+        ArrayList<Integer> serializedTree = new ArrayList<>();
+        serialize(root, serializedTree);
+        System.out.println("Serialized Tree: " + serializedTree);
+
+        deserializerIdx = 0;
+        Node deserializedRoot = deserialize(serializedTree);
+
+        System.out.println("Deserialized Tree Preorder: ");
+        printPreOrder(deserializedRoot);
     }
 
     static Node createBinaryTree(int[] array){
@@ -397,6 +412,85 @@ public class BinaryTree {
             return right;
         }
    }
+
+   static int timeToBurnABinaryTree(Node root, int leaf) {
+        if(root == null) return -1;
+        int result = -1;
+       List<Node> ancestors = new ArrayList<>();
+       ancestors(root, ancestors, leaf);
+       for(int i=0; i<ancestors.size(); i++){
+           result = Math.max(result, heightOfATree(ancestors.get(i)) + i);
+       }
+       return result;
+   }
+
+   static boolean ancestors(Node root, List<Node> ancestors, int val){
+        if(root == null) return false;
+        if(root.data == val || ancestors(root.left, ancestors, val) || ancestors(root.right, ancestors, val)) {
+            ancestors.add(root);
+            return true;
+        }
+        return false;
+   }
+
+   static int countNodesInCompleteBinaryTree(Node root){
+        if(root == null) return 0;
+        int leftCount = countOfNodes(root.left);
+        int rightCount = countOfNodes(root.right);
+        return leftCount + rightCount + 1;
+   }
+
+   static int countNodesInCompleteBinaryTreeOptimized(Node root) {
+        if(root == null) return 0;
+        int leftMostCount = 0;
+        Node leftNode = root;
+        while(leftNode != null){
+            leftMostCount++;
+            leftNode = leftNode.left;
+        }
+
+       int rightMostCount = 0;
+       Node rightNode = root;
+       while(rightNode != null){
+           rightMostCount++;
+           rightNode = rightNode.right;
+       }
+
+       if(leftMostCount == rightMostCount) {
+           return (int) (Math.pow(2, leftMostCount) - 1);
+       }
+
+       return 1 + countNodesInCompleteBinaryTree(root.left) + countNodesInCompleteBinaryTree(root.right);
+   }
+
+   static void serialize(Node root, ArrayList<Integer> ls) {
+        if(root == null) {
+            ls.add(-1);
+            return;
+        }
+        ls.add(root.data);
+        serialize(root.left, ls);
+        serialize(root.right, ls);
+   }
+
+   static int deserializerIdx = 0;
+    static Node deserialize(ArrayList<Integer> ls) {
+        if (ls.get(deserializerIdx) == -1) {
+            deserializerIdx++;
+            return null;
+        }
+        Node newNode = new Node(ls.get(deserializerIdx++));
+        newNode.left = deserialize(ls);
+        newNode.right = deserialize(ls);
+        return newNode;
+   }
+
+    static void printPreOrder(Node node) {
+        if (node == null) return;
+        System.out.print(node.data + " ");
+        printPreOrder(node.left);
+        printPreOrder(node.right);
+    }
 }
 
 class TreeInfo {
