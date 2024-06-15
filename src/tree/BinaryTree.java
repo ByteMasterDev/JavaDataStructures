@@ -1,518 +1,618 @@
 package tree;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
 
 public class BinaryTree {
-    static int idx = -1;
-    private static int preOrderIdx = 0;
 
     public static void main(String[] args) {
-        int[] array = {1,2,4,-1,-1,5,-1,-1,3,-1,6,-1,-1};
-        Node root = createBinaryTree(array);
+        int[] array = {1, 2, 4, -1, -1, 5, -1, -1, 3, -1, 6, -1, -1};
+        TreeNode tree = constructBinaryTreeFromArray(array);
 
-        System.out.println("Beginning of pre Order Traversal");
-        preOrderTraversal(root);
+        System.out.println("Preorder Traversal:");
+        preOrderTraversal(tree);
+        System.out.println();
 
-        System.out.println("Beginning of post Order Traversal");
-        postOrderTraversal(root);
+        System.out.println("Inorder Traversal:");
+        inOrderTraversal(tree);
+        System.out.println();
 
-        System.out.println("Beginning of in Order Traversal");
-        inOrderTraversal(root);
+        System.out.println("Postorder Traversal:");
+        postOrderTraversal(tree);
+        System.out.println();
 
-        System.out.println("Beginning of Level Order Traversal");
-        levelOrderTraversal(root);
+        System.out.println("Level Order Traversal:");
+        levelOrderTraversal(tree);
+        System.out.println();
 
-        System.out.println("Count of Nodes : " + countOfNodes(root));
-        System.out.println("Sum of Nodes : " + sumOfNodes(root));
-        System.out.println("Height of a tree : " + heightOfATree(root));
-        System.out.println("Diameter of a tree, Naive n^2 solution: " + diameterNaiveSolution(root));
-        System.out.println("Diameter of a tree, Naive O(N) solution: : " + diameterOptimizedSolution(root).diameter);
-        System.out.println("Sum of nodes at kth level i.e level 3 : " + sumOfNodesAtKthLevel(root, 2));
-        System.out.println("Size of a Binary Tree : " + sizeOfABinaryTree(root));
-        System.out.println("Maximum in Binary Tree : " + maximumInBinaryTree(root));
-        System.out.println("Left View of a Binary Tree");
-        printLeftView(root, new ArrayList<>(), 0);
-        System.out.println("Is Child Sum equals Parent : " + childSumProperty(root));
-        System.out.println("Is a Balanced Tree : " + isBalancedTree(root));
-        System.out.println("Max Width Of A Tree : " +maxWidthOfATree(root));
+        System.out.println("Number of Nodes in the Tree: " + countNodes(tree));
+        System.out.println("Sum of All Nodes in the Tree: " + sumOfNodes(tree));
+        System.out.println("Height of the Tree: " + heightOfATree(tree));
+        System.out.println("Diameter of the Tree (Naive): " + diameterOfATreeNaive(tree));
+        System.out.println("Diameter of the Tree (Optimized): " + diameterOfATreeOptimized(tree).diameter);
+        System.out.println("Sum of Nodes at Kth Level (K=2): " + sumOfNodesAtKthLevel(tree, 2));
+        System.out.println("Size of the Binary Tree: " + sizeOfABinaryTree(tree));
+        System.out.println("Maximum Value in the Binary Tree: " + maxInABinaryTree(tree));
 
+        System.out.println("Lowest Common Ancestor (LCA) of nodes 5 and 6 (Naive Approach):");
+        TreeNode lcaNode = lcaNaive(tree, 5, 6);
+        System.out.println("LCA Naive value: " + (lcaNode != null ? lcaNode.val : "null"));
 
-        System.out.println("Construct Binary Tree to Doubly Linked List : ");
-        Node rootDLL = new Node(4);
-        rootDLL.left = new Node(2);
-        rootDLL.right = new Node(5);
-        rootDLL.left.left = new Node(1);
-        rootDLL.left.right = new Node(3);
+        System.out.println("Lowest Common Ancestor (LCA) of nodes 5 and 6 (Optimized Approach):");
+        TreeNode lcaNodeOptimized = lcaOptimized(tree, 5, 6);
+        System.out.println("LCA Optimized value: " + (lcaNodeOptimized != null ? lcaNodeOptimized.val : "null"));
 
-        // Convert to a doubly linked list
-        Node head = constructBinaryTreeToDoublyLinkedList(rootDLL);
+        List<Integer> leftView = new ArrayList<>();
+        System.out.println("Left View of the Binary Tree:");
+        leftViewOfABinaryTree(tree, leftView, 0);
+        System.out.println(leftView);
 
-        // Print the doubly linked list
-        printDoublyLinkedList(head);
+        List<Integer> rightView = new ArrayList<>();
+        System.out.println("Right View of the Binary Tree:");
+        rightViewOfABinaryTree(tree, rightView, 0);
+        System.out.println(rightView);
 
-        System.out.print("Construct Tree Using Inorder and Preorder array: ");
+        System.out.println("Zigzag Level Order Traversal:");
+        List<List<Integer>> zigzagResult = zigzagLevelOrder(tree);
+        for (List<Integer> level : zigzagResult) {
+            for (int val : level) {
+                System.out.print(val + " ");
+            }
+            System.out.println();
+        }
+
+        System.out.println("\nIs Complete Binary Tree: " + isCompleteBinaryTree(tree));
+        System.out.println("Count of nodes in complete binary tree: " + countNodesInCompleteBinaryTree(tree));
+
+        System.out.println("Children Sum Property: " + childrenSumProperty(tree));
+        System.out.println("Is the Tree Balanced (Naive): " + isBalancedBinaryTreeNaive(tree));
+        System.out.println("Is the Tree Balanced (Optimized): " + (isBalancedBinaryTreeOptimized(tree) != -1));
+        System.out.println("Maximum Width of the Binary Tree: " + maxWidthOfBinaryTree(tree));
+
+        System.out.println("Constructing Binary Tree from Inorder and Preorder:");
         int[] inOrder = {4, 2, 5, 1, 6, 3, 7};
         int[] preOrder = {1, 2, 4, 5, 3, 6, 7};
-        Node btRoot = constructBTFromInOrderAndPreOrder(inOrder, preOrder, 0, inOrder.length - 1);
-        System.out.print("In-order of constructed tree: ");
-        printInOrder(btRoot);
+        TreeNode constructedTree = constructBTFromInOrderAndPreOrder(inOrder, preOrder, 0, inOrder.length - 1);
+        preOrderTraversal(constructedTree); // Validate construction
+        System.out.println();
 
-        System.out.print("Zig Zag Traversal of Binary Tree: ");
-        binaryTreeZigZagTraversal(root);
+        System.out.println("Vertical Order Traversal (Not Optimized):");
+        List<List<Integer>> verticalOrderNotOptimizedResult = verticalOrderNotOptimized(tree);
+        System.out.println(verticalOrderNotOptimizedResult);
 
-        System.out.print("LCA of Binary Tree Naive Solution: ");
-        Node lca = lowestCommonAncestor(root, 2, 5);
-        if (lca != null) {
-            System.out.println("LCA(2, 5): " + lca.data);
-        } else {
-            System.out.println("No LCA found.");
-        }
+        System.out.println("Vertical Order Traversal (Optimized):");
+        List<List<Integer>> verticalOrderOptimizedResult = verticalOrderOptimized(tree);
+        System.out.println(verticalOrderOptimizedResult);
 
-        System.out.print("LCA of Binary Tree Optimized Solution: ");
-        Node lcaOptimized = lowestCommonAncestorOptimized(root, 2, 5);
-        if (lcaOptimized != null) {
-            System.out.println("LCA(2, 5): " + lcaOptimized.data);
-        } else {
-            System.out.println("No LCA found.");
-        }
+        System.out.println("Sum Root to Leaf Numbers: " + sumNumbers(tree));
 
-        System.out.println("Time to Burn A Tree :" +timeToBurnABinaryTree(root, 2));
-        System.out.println("Time to Burn A Tree :" +timeToBurnABinaryTree(root, 2));
-        System.out.println("Count Nodes in a complete binary tree naive solution :" + countNodesInCompleteBinaryTree(root));
-        System.out.println("Count Nodes in a complete binary tree Optimized solution :" + countNodesInCompleteBinaryTreeOptimized(root));
+        // Serialize and Deserialize
+        System.out.println("Serialize Tree:");
+        String serializedTree = serialize(tree);
+        System.out.println(serializedTree);
 
-        ArrayList<Integer> serializedTree = new ArrayList<>();
-        serialize(root, serializedTree);
-        System.out.println("Serialized Tree: " + serializedTree);
+        System.out.println("Deserialize Tree:");
+        TreeNode deserializedTree = deserialize(serializedTree);
+        preOrderTraversal(deserializedTree); // Validate deserialization
 
-        deserializerIdx = 0;
-        Node deserializedRoot = deserialize(serializedTree);
+        int startNode1 = 5;
+        int startNode2 = 4;
+        int startNode3 = 6;
 
-        System.out.println("Deserialized Tree Preorder: ");
-        printPreOrder(deserializedRoot);
+        System.out.println("Amount of time for infection to spread from node " + startNode1 + ": " + amountOfTime(tree, startNode1));
+        System.out.println("Amount of time for infection to spread from node " + startNode2 + ": " + amountOfTime(tree, startNode2));
+        System.out.println("Amount of time for infection to spread from node " + startNode3 + ": " + amountOfTime(tree, startNode3));
     }
 
-    static Node createBinaryTree(int[] array){
-
-        idx++;
-        if(array[idx] == -1){
-            return null;
-        }
-
-        Node root = new Node(array[idx]);
-        root.left = createBinaryTree(array);
-        root.right = createBinaryTree(array);
-        return root;
+    static int idx = -1;
+    static TreeNode constructBinaryTreeFromArray(int[] array) {
+      idx++;
+      if(idx >= array.length) return null;
+      if(array[idx] == -1) return null;
+      TreeNode root = new TreeNode(array[idx]);
+      root.left = constructBinaryTreeFromArray(array);
+      root.right = constructBinaryTreeFromArray(array);
+      return root;
     }
 
-    static void preOrderTraversal(Node root){
+    static void preOrderTraversal(TreeNode root){
         if(root == null) return;
-        System.out.println(root.data);
+        System.out.println(root.val);
         preOrderTraversal(root.left);
         preOrderTraversal(root.right);
     }
 
-    static void postOrderTraversal(Node root){
+    static void inOrderTraversal(TreeNode root){
+        if(root == null) return;
+        inOrderTraversal(root.left);
+        System.out.println(root.val);
+        inOrderTraversal(root.right);
+    }
+
+    static void postOrderTraversal(TreeNode root){
         if(root == null) return;
         postOrderTraversal(root.left);
         postOrderTraversal(root.right);
-        System.out.println(root.data);
+        System.out.println(root.val);
     }
 
-    static void levelOrderTraversal(Node root){
+    static void levelOrderTraversal(TreeNode root) {
         if(root == null) return;
-        Queue<Node> q = new LinkedList<>();
+        Queue<TreeNode> q = new LinkedList<>();
         q.add(root);
 
         while(!q.isEmpty()){
-            Node current = q.poll();
-            System.out.println(current.data);
-
-            if(current.left != null){
-                q.add(current.left);
-            }
-
-            if(current.right != null){
-                q.add(current.right);
+            int qSize = q.size();
+            for(int i=0; i<qSize; i++){
+                TreeNode current = q.poll();
+                System.out.println(current.val);
+                if(current.left != null) q.add(current.left);
+                if(current.right != null) q.add(current.right);
             }
         }
     }
 
-    static void inOrderTraversal(Node root){
-        if(root == null) return;
-        inOrderTraversal(root.left);
-        System.out.println(root.data);
-        inOrderTraversal(root.right);
-    }
-
-    static int countOfNodes(Node root){
+    static int countNodes(TreeNode root){
         if(root == null) return 0;
-        int leftCount = countOfNodes(root.left);
-        int rightCount = countOfNodes(root.right);
-        return leftCount + rightCount + 1;
+        return countNodes(root.left) + countNodes(root.right) + 1;
     }
 
-    static int sumOfNodes(Node root){
+    static int sumOfNodes(TreeNode root){
         if(root == null) return 0;
-        return root.data + sumOfNodes(root.left) + sumOfNodes(root.right);
+        return root.val + sumOfNodes(root.left) + sumOfNodes(root.right);
     }
 
-    static int heightOfATree(Node root){
+    static int heightOfATree(TreeNode root){
         if(root == null) return 0;
         int leftHeight = heightOfATree(root.left);
         int rightHeight = heightOfATree(root.right);
         return Math.max(leftHeight, rightHeight) + 1;
     }
 
-    static int diameterNaiveSolution(Node root){
+    static int diameterOfATreeNaive(TreeNode root){
         if(root == null) return 0;
-        int leftDiameter = diameterNaiveSolution(root.left);
-        int rightDiameter = diameterNaiveSolution(root.right);
-        int diameterWithRoot = heightOfATree(root.left) + heightOfATree(root.right) + 1;
-        return Math.max(diameterWithRoot, Math.max(leftDiameter, rightDiameter));
+        int leftDiameter = diameterOfATreeNaive(root.left);
+        int rightDiameter = diameterOfATreeNaive(root.right);
+        int leftHeight = heightOfATree(root.left);
+        int rightHeight = heightOfATree(root.right);
+        int diameterThroughRoot = leftHeight + rightHeight + 1;
+        return Math.max(diameterThroughRoot, Math.max(leftDiameter, rightDiameter));
     }
 
-    static TreeInfo diameterOptimizedSolution(Node root){
-        if(root == null) {
-            return new TreeInfo(0, 0);
+    static TreeInfo diameterOfATreeOptimized(TreeNode root){
+        if(root == null) return new TreeInfo(0,0);
+        TreeInfo leftTree = diameterOfATreeOptimized(root.left);
+        TreeInfo rightTree = diameterOfATreeOptimized(root.right);
+
+        int leftDiam = leftTree.diameter;
+        int rightDiam = rightTree.diameter;
+
+        int leftHeight = leftTree.height;
+        int rightHeight = rightTree.height;
+
+        int myHeight = Math.max(leftHeight, rightHeight) + 1;
+        int diameterThruRoot = leftHeight + rightHeight + 1;
+
+        int myDiam = Math.max(diameterThruRoot, Math.max(leftDiam, rightDiam));
+        return new TreeInfo(myHeight, myDiam);
+    }
+
+    static int sumOfNodesAtKthLevel(TreeNode root, int k){
+        if(root == null) return 0;
+        if(k == 0){
+            return root.val;
         }
-        TreeInfo leftTreeInfo = diameterOptimizedSolution(root.left);
-        TreeInfo rightTreeInfo = diameterOptimizedSolution(root.right);
-
-        int leftDiameter = leftTreeInfo.diameter;
-        int rightDiameter = rightTreeInfo.diameter;
-        int d3 = leftTreeInfo.height + rightTreeInfo.height + 1;
-        int height = Math.max(leftTreeInfo.height, rightTreeInfo.height) + 1;
-
-        int diam = Math.max(Math.max(leftDiameter, rightDiameter), d3);
-        TreeInfo treeInfo = new TreeInfo(height, diam);
-        return treeInfo;
-    }
-
-    static boolean isSubtree(Node rootNode, Node subtreeNode){
-        if (rootNode == null && subtreeNode == null) return true;
-        if (rootNode == null) return false;
-        if (subtreeNode == null) return true;
-        return checkForSubtree(rootNode, subtreeNode);
-    }
-
-    static boolean checkForSubtree(Node rootNode, Node subtreeNode){
-        if (rootNode == null) return false;
-        if (rootNode.data == subtreeNode.data && matchTree(rootNode, subtreeNode)) {
-            return true;
-        }
-        return checkForSubtree(rootNode.left, subtreeNode) || checkForSubtree(rootNode.right, subtreeNode);
-    }
-
-    static boolean matchTree(Node rootNode, Node subtreeNode){
-        if (rootNode == null && subtreeNode == null) return true;
-        if (rootNode == null || subtreeNode == null) return false;
-        return rootNode.data == subtreeNode.data
-                && matchTree(rootNode.left, subtreeNode.left)
-                && matchTree(rootNode.right, subtreeNode.right);
-    }
-
-    static int sumOfNodesAtKthLevel(Node root, int k) {
-        if (root == null) return 0; // Base case
-        if (k == 0) return root.data;
         return sumOfNodesAtKthLevel(root.left, k - 1) + sumOfNodesAtKthLevel(root.right, k - 1);
     }
 
-    static int sizeOfABinaryTree(Node root){
+    static int sizeOfABinaryTree(TreeNode root){
         if(root == null) return 0;
-        int leftSize = sizeOfABinaryTree(root.left);
-        int rightSize = sizeOfABinaryTree(root.right);
-        return leftSize + rightSize + 1;
+        return sizeOfABinaryTree(root.left) + sizeOfABinaryTree(root.right) + 1;
     }
 
-    static int maximumInBinaryTree(Node root){
+
+    static int maxInABinaryTree(TreeNode root){
         if(root == null) return Integer.MIN_VALUE;
-        int leftVal = maximumInBinaryTree(root.left);
-        int rightVal = maximumInBinaryTree(root.right);
-        return Math.max(root.data, Math.max(leftVal, rightVal));
+        int leftVal = maxInABinaryTree(root.left);
+        int rightVal = maxInABinaryTree(root.right);
+        return Math.max(root.val, Math.max(leftVal, rightVal));
     }
 
-    static void printLeftView(Node root, List<Boolean> levelsPrinted, int level){
+    static void leftViewOfABinaryTree(TreeNode root, List<Integer> ls, int level) {
         if(root == null) return;
-        if (level >= levelsPrinted.size()) {
-            System.out.println(root.data);
-            levelsPrinted.add(true);
+        if(level >= ls.size()) {
+            ls.add(root.val);
+            System.out.println(root.val);
         }
-        printLeftView(root.left, levelsPrinted, level + 1);
-        printLeftView(root.right, levelsPrinted, level + 1);
+        leftViewOfABinaryTree(root.left, ls, level + 1);
+        leftViewOfABinaryTree(root.right, ls, level + 1);
     }
 
-    static boolean childSumProperty(Node root){
+    static void rightViewOfABinaryTree(TreeNode root, List<Integer> ls, int level) {
+        if(root == null) return;
+        if(level >= ls.size()) {
+            ls.add(root.val);
+        } else {
+            ls.set(level, root.val); // Update the existing value at the current level
+        }
+        rightViewOfABinaryTree(root.left, ls, level + 1);
+        rightViewOfABinaryTree(root.right, ls, level + 1);
+    }
+
+    static boolean childrenSumProperty(TreeNode root){
         if(root == null) return true;
-        if(root.right == null && root.left == null) return true;
-        int leftVal = 0;
-        int rightVal = 0;
-        if(root.left != null){
-            leftVal = root.left.data;
-        }
-        if(root.right != null){
-            rightVal = root.right.data;
-        }
-        return leftVal + rightVal == root.data
-                && childSumProperty(root.left)
-                && childSumProperty(root.right);
+
+        Integer leftVal = root.left != null ? root.left.val : 0;
+        Integer rightVal = root.right != null ? root.right.val : 0;
+
+        return root.val == leftVal + rightVal
+                && childrenSumProperty(root.left)
+                && childrenSumProperty(root.right);
+
     }
 
-    static boolean isBalancedTree(Node root){
+    static int maxWidthOfBinaryTree(TreeNode root){
+        if (root == null) return 0;
+        int maxWidth = 0;
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(root);
+
+        while(!q.isEmpty()){
+            int qSize = q.size();
+            maxWidth = Math.max(maxWidth, qSize);
+
+            for(int i=0; i<qSize; i++){
+                TreeNode current = q.poll();
+                if(current.left != null) q.add(current.left);
+                if(current.right != null) q.add(current.right);
+            }
+        }
+        return maxWidth;
+    }
+
+
+//    int[] inOrder = {4, 2, 5, 1, 6, 3, 7};
+//    int[] preOrder = {1, 2, 4, 5, 3, 6, 7};
+    static int preOrderIdx = 0;
+    static TreeNode constructBTFromInOrderAndPreOrder(int[] inOrder, int[] preOrder, int si, int ei) {
+        if (si > ei || preOrderIdx >= preOrder.length) return null;
+        int preOrderVal = preOrder[preOrderIdx++];
+        TreeNode root = new TreeNode(preOrderVal);
+
+        int inOrderIdx = 0;
+        for(int i=si; i<ei; i++){
+            if(inOrder[i] == preOrderVal){
+                inOrderIdx = i;
+                break;
+            }
+        }
+
+        root.left = constructBTFromInOrderAndPreOrder(inOrder, preOrder, si, inOrderIdx - 1);
+        root.right = constructBTFromInOrderAndPreOrder(inOrder, preOrder, inOrderIdx + 1, ei);
+        return root;
+    }
+
+    // Leetcode: 103
+    static List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (root == null)
+            return result;
+
+        boolean reverse = false;
+        Queue<TreeNode> q = new LinkedList<>();
+        Stack<Integer> s = new Stack<>();
+        q.add(root);
+
+        while (!q.isEmpty()) {
+            int qSize = q.size();
+            List<Integer> innerList = new ArrayList<>();
+            for (int i = 0; i < qSize; i++) {
+                TreeNode current = q.poll();
+                if (!reverse) {
+                    innerList.add(current.val);
+                } else {
+                    s.push(current.val);
+                }
+
+                if(current.left != null) q.add(current.left);
+                if(current.right != null) q.add(current.right);
+            }
+
+            if(reverse){
+                while(!s.isEmpty()){
+                    innerList.add(s.pop());
+                }
+            }
+
+            result.add(innerList);
+            reverse = !reverse;
+        }
+
+        return result;
+
+    }
+
+    static TreeNode lcaNaive(TreeNode root, int valOne, int valTwo) {
+        List<TreeNode> ancestorOne = new ArrayList<>();
+        List<TreeNode> ancestorTwo = new ArrayList<>();
+
+        if(!findPath(root, valOne, ancestorOne) || !findPath(root, valTwo, ancestorTwo)) return null;
+
+        int min = Math.min(ancestorOne.size(), ancestorTwo.size());
+        for(int i=0; i<min-1; i++){
+            if(ancestorOne.get(i+1) != ancestorTwo.get(i+1)){
+                return ancestorOne.get(i);
+            }
+        }
+
+        return ancestorOne.get(min - 1);
+
+    }
+
+    static boolean findPath(TreeNode root, int val, List<TreeNode> ancestors){
+        if(root == null) return false;
+        ancestors.add(root);
+        if (root.val == val) {
+            return true;
+        }
+        if(findPath(root.left, val, ancestors) || findPath(root.right, val, ancestors)) return true;
+        ancestors.remove(ancestors.size() - 1);
+        return false;
+    }
+
+    static TreeNode lcaOptimized(TreeNode root, int valOne, int valTwo){
+        if(root == null) return null;
+        if(root.val == valOne || root.val == valTwo) return root;
+        TreeNode left = lcaOptimized(root.left, valOne, valTwo);
+        TreeNode right = lcaOptimized(root.right, valOne, valTwo);
+
+        if(left != null && right != null) return root;
+        return left == null ? right : left;
+    }
+
+    /** Balanced Tree: For every node in the tree, the height difference between its left and right subtrees is no more than one.*/
+    static boolean isBalancedBinaryTreeNaive(TreeNode root){
         if(root == null) return true;
         int leftHeight = heightOfATree(root.left);
         int rightHeight = heightOfATree(root.right);
-        return Math.abs(leftHeight - rightHeight) < 2
-                && isBalancedTree(root.left)
-                && isBalancedTree(root.right);
+        return Math.abs(leftHeight - rightHeight) <=1
+                && isBalancedBinaryTreeNaive(root.left)
+                && isBalancedBinaryTreeNaive(root.right);
     }
 
-    static int maxWidthOfATree(Node root){
+    static int isBalancedBinaryTreeOptimized(TreeNode root){
         if(root == null) return 0;
-        Queue<Node> q = new LinkedList<>();
-        q.add(root);
 
-        int result = 0;
-        while(!q.isEmpty()){
-            int qSize = q.size();
-            for(int i=0; i<qSize; i++){
-               Node current = q.poll();
-               if(current.left != null){
-                   q.add(current.left);
-               }
-                if(current.right != null){
-                    q.add(current.right);
+        int leftHeight = isBalancedBinaryTreeOptimized(root.left);
+        if(leftHeight == -1) return -1;
+
+        int rightHeight = isBalancedBinaryTreeOptimized(root.right);
+        if(rightHeight == -1) return -1;
+
+        int heightDiff = Math.abs(leftHeight - rightHeight);
+        if(heightDiff > 1) return -1;
+
+        return Math.max(leftHeight, rightHeight) + 1;
+    }
+
+    /* A complete binary tree is a type of binary tree in which all levels are fully filled except possibly the last level.
+        In the last level, nodes are filled from left to right without any gaps.
+     */
+
+    public static boolean isCompleteBinaryTree(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        boolean endOfLevel = false;
+
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+
+            // If we encounter a null node after non-null nodes, it should be the last level
+            if (node == null) {
+                endOfLevel = true;
+            } else {
+                // If we've encountered a null node before, and there's any non-null node after it
+                if (endOfLevel) {
+                    return false;
                 }
+
+                // Enqueue left and right children
+                queue.offer(node.left);
+                queue.offer(node.right);
             }
-            result = Math.max(qSize, result);
+        }
+
+        return true;
+    }
+
+    static int countNodesInCompleteBinaryTree(TreeNode root){
+        if(root == null) return 0;
+
+        int leftCount = 0;
+        TreeNode leftNode = root;
+        while(leftNode != null){
+            leftCount++;
+            leftNode = leftNode.left;
+        }
+
+        int rightCount = 0;
+        TreeNode rightNode = root;
+        while(rightNode != null){
+            rightCount++;
+            rightNode = rightNode.right;
+        }
+
+        boolean isSame = (Math.pow(2, leftCount) - 1) == (Math.pow(2, rightCount) - 1);
+        if(isSame){
+            return (int) (Math.pow(2, leftCount) - 1);
+        }
+
+        return 1 + countNodesInCompleteBinaryTree(root.left) + countNodesInCompleteBinaryTree(root.right);
+    }
+
+    // Leetcode: 297
+    static String serialize(TreeNode root){
+        if(root == null) return "n";
+        return String.valueOf(root.val) + "," +  serialize(root.left) + "," + serialize(root.right);
+    }
+
+    static TreeNode deserialize(String val){
+
+        String[] list = val.split(",");
+        return deserializeHelper(list);
+    }
+
+    static TreeNode deserializeHelper(String[] val){
+        if(idx >= val.length || val[idx].equals("n")){
+            idx++;
+            return null;
+        }
+        TreeNode root = new TreeNode(Integer.parseInt(val[idx]));
+        root.left = deserializeHelper(val);
+        root.right = deserializeHelper(val);
+        return root;
+    }
+
+    // Leetcode: 314-Binary Tree Vertical Order Traversal
+    /* In Naive approach , reeMap sorts keys automatically, it adds an O(log n) overhead for inserts and lookups due to maintaining the order*/
+    static public List<List<Integer>> verticalOrderNotOptimized(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        Map<Integer, List<Integer>> treeMap = new TreeMap<>();
+        verticalOrderHelper(root, 0, treeMap);
+
+        for(List<Integer> ls : treeMap.values()){
+            result.add(ls);
+        }
+        return result;
+    }
+
+    static void verticalOrderHelper(TreeNode root, int level, Map<Integer, List<Integer>> treeMap){
+        if(root == null) return;
+        treeMap.putIfAbsent(level, new ArrayList<>());
+        treeMap.get(level).add(root.val);
+        verticalOrderHelper(root.left, level - 1, treeMap);
+        verticalOrderHelper(root.right, level + 1, treeMap);
+    }
+
+    static List<List<Integer>> verticalOrderOptimized(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (root == null) {
+            return result;
+        }
+        Map<Integer, List<Integer>> map = new HashMap<>();
+
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair(0, root));
+
+        int min = 0;
+        int max = 0;
+
+        while(!q.isEmpty()){
+            Pair currentPair = q.poll();
+            TreeNode currentNode = currentPair.node;
+
+            map.putIfAbsent(currentPair.level, new ArrayList<>());
+            map.get(currentPair.level).add(currentNode.val);
+
+            min = Math.min(min, currentPair.level);
+            max = Math.max(max, currentPair.level);
+
+            if(currentNode.left != null){
+                q.add(new Pair(currentPair.level - 1, currentNode.left));
+            }
+
+            if(currentNode.right != null){
+                q.add(new Pair(currentPair.level + 1, currentNode.right));
+            }
+        }
+
+        for(int i=min; i<=max; i++){
+            if (map.containsKey(i)) {
+                result.add(map.get(i));
+            }
         }
 
         return result;
     }
 
-    static Node prev;
-    static Node constructBinaryTreeToDoublyLinkedList(Node root){
-        if(root == null) return null;
-        Node head = constructBinaryTreeToDoublyLinkedList(root.left);
-        if(prev == null){
-            head = root;
-        }else{
-            root.left = prev;
-            prev.right = root;
-        }
-
-        prev = root;
-        constructBinaryTreeToDoublyLinkedList(root.right);
-        return head;
+    // Leetcode: 129 Sum Root to Leaf Numbers
+    static int sumNumbers(TreeNode root) {
+        return sumNumbersHelper(root, 0);
     }
 
-    static void printDoublyLinkedList(Node head) {
-        Node current = head;
-        while (current != null) {
-            System.out.print(current.data + " ");
-            current = current.right;
-        }
+    static int sumNumbersHelper(TreeNode root, int currentSum){
+        if(root == null) return 0;
+        currentSum = currentSum * 10 + root.val;
+        if(root.left == null && root.right == null) return currentSum;
+        return sumNumbersHelper(root.left, currentSum) + sumNumbersHelper(root.right, currentSum);
     }
 
-    static Node constructBTFromInOrderAndPreOrder(int[] inOrder, int[] preOrder, int si, int ei){
-        if(si > ei) return null;
-        Node root = new Node(preOrder[preOrderIdx]);
-        preOrderIdx++;
-        int idxOfElementInOrder = 0;
-        for(int i=si; i<=ei; i++){
-            if(inOrder[i] == root.data){
-                idxOfElementInOrder = i;
-                break;
-            }
-        }
-        root.left = constructBTFromInOrderAndPreOrder(inOrder, preOrder, si, idxOfElementInOrder - 1);
-        root.right = constructBTFromInOrderAndPreOrder(inOrder, preOrder, idxOfElementInOrder + 1, ei);
-        return root;
-    }
+    // Leetcode: 2385 - Amount of time for Binary Tree to be Infected from a given Node.
+    public static int amountOfTime(TreeNode root, int start) {
+        Map<TreeNode, TreeNode> parentMap = new HashMap<>();
+        buildParentMap(root, parentMap);
+        TreeNode targetNode = findNode(root, start);
+        if (targetNode == null) return -1;
 
-    public static void printInOrder(Node btRoot) {
-        if (btRoot != null) {
-            printInOrder(btRoot.left);
-            System.out.print(btRoot.data + " ");
-            printInOrder(btRoot.right);
-        }
-    }
+        Set<TreeNode> visited = new HashSet<>();
+        int infectionCount = 0;
 
-    static void binaryTreeZigZagTraversal(Node root) {
-        if(root == null) return;
-        boolean reverseFlag = false;
-
-        Queue<Node> q = new LinkedList<>();
-        Stack<Integer> s = new Stack<>();
-        q.add(root);
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(targetNode);
 
         while(!q.isEmpty()){
             int qSize = q.size();
             for(int i=0; i<qSize; i++){
-                Node current = q.poll();
-                if(reverseFlag){
-                    s.add(current.data);
-                }else{
-                    System.out.println(current.data);
-                }
-                if(current.left != null){
+                TreeNode current = q.poll();
+                // Get parent of current node
+                TreeNode parentNode = parentMap.get(current);
+
+                // Add children and parent to queue if not visited
+                if (current.left != null && !visited.contains(current.left)) {
                     q.add(current.left);
+                    visited.add(current.left);
                 }
-                if(current.right != null){
+                if (current.right != null && !visited.contains(current.right)) {
                     q.add(current.right);
+                    visited.add(current.right);
+                }
+                if (parentNode != null && !visited.contains(parentNode)) {
+                    q.add(parentNode);
+                    visited.add(parentNode);
                 }
             }
 
-            if(reverseFlag){
-                while(!s.isEmpty()){
-                    System.out.println(s.pop());
-                }
-            }
-            reverseFlag = !reverseFlag;
+            infectionCount++;
         }
+
+        return infectionCount - 1;
     }
 
-    static Node lowestCommonAncestor(Node root, int valOne, int valTwo){
-        List<Node> pathOne = new ArrayList<>();
-        List<Node> pathTwo = new ArrayList<>();
-
-        if(!findPath(root, pathOne, valOne) || !findPath(root, pathTwo, valTwo)) return null;
-
-        for(int i=0; i<pathOne.size() - 1 && i<pathTwo.size() - 1; i++) {
-            if(pathOne.get(i+1) != pathTwo.get(i+1)) return pathOne.get(i);
-        }
-        return null;
+    static void buildParentMap(TreeNode root, Map<TreeNode, TreeNode> parentMap){
+        if(root == null) return;
+        if(root.left != null) parentMap.put(root.left, root);
+        if(root.right != null) parentMap.put(root.right, root);
+        buildParentMap(root.left, parentMap);
+        buildParentMap(root.right, parentMap);
     }
 
-   static boolean findPath(Node root, List<Node> ls, int val) {
-        if(root == null) return false;
-        if(root.data == val) return true;
-        ls.add(root);
-        if(findPath(root.left, ls, val) || findPath(root.right, ls, val)){
-            return true;
-        }
-        ls.remove(ls.size()-1);
-        return false;
-   }
-
-   static Node lowestCommonAncestorOptimized(Node root, int valOne, int valTwo) {
+    static TreeNode findNode(TreeNode root, int start) {
         if(root == null) return null;
-        if(root.data == valOne || root.data == valTwo) return root;
-        Node left = lowestCommonAncestorOptimized(root.left, valOne, valTwo);
-        Node right = lowestCommonAncestorOptimized(root.right, valOne, valTwo);
-        if(left != null && right != null) return root;
-        if(left != null){
-            return left;
-        }
-        else {
-            return right;
-        }
-   }
-
-   static int timeToBurnABinaryTree(Node root, int leaf) {
-        if(root == null) return -1;
-        int result = -1;
-       List<Node> ancestors = new ArrayList<>();
-       ancestors(root, ancestors, leaf);
-       for(int i=0; i<ancestors.size(); i++){
-           result = Math.max(result, heightOfATree(ancestors.get(i)) + i);
-       }
-       return result;
-   }
-
-   static boolean ancestors(Node root, List<Node> ancestors, int val){
-        if(root == null) return false;
-        if(root.data == val || ancestors(root.left, ancestors, val) || ancestors(root.right, ancestors, val)) {
-            ancestors.add(root);
-            return true;
-        }
-        return false;
-   }
-
-   static int countNodesInCompleteBinaryTree(Node root){
-        if(root == null) return 0;
-        int leftCount = countOfNodes(root.left);
-        int rightCount = countOfNodes(root.right);
-        return leftCount + rightCount + 1;
-   }
-
-   static int countNodesInCompleteBinaryTreeOptimized(Node root) {
-        if(root == null) return 0;
-        int leftMostCount = 0;
-        Node leftNode = root;
-        while(leftNode != null){
-            leftMostCount++;
-            leftNode = leftNode.left;
-        }
-
-       int rightMostCount = 0;
-       Node rightNode = root;
-       while(rightNode != null){
-           rightMostCount++;
-           rightNode = rightNode.right;
-       }
-
-       if(leftMostCount == rightMostCount) {
-           return (int) (Math.pow(2, leftMostCount) - 1);
-       }
-
-       return 1 + countNodesInCompleteBinaryTree(root.left) + countNodesInCompleteBinaryTree(root.right);
-   }
-
-   static void serialize(Node root, ArrayList<Integer> ls) {
-        if(root == null) {
-            ls.add(-1);
-            return;
-        }
-        ls.add(root.data);
-        serialize(root.left, ls);
-        serialize(root.right, ls);
-   }
-
-   static int deserializerIdx = 0;
-    static Node deserialize(ArrayList<Integer> ls) {
-        if (ls.get(deserializerIdx) == -1) {
-            deserializerIdx++;
-            return null;
-        }
-        Node newNode = new Node(ls.get(deserializerIdx++));
-        newNode.left = deserialize(ls);
-        newNode.right = deserialize(ls);
-        return newNode;
-   }
-
-    static void printPreOrder(Node node) {
-        if (node == null) return;
-        System.out.print(node.data + " ");
-        printPreOrder(node.left);
-        printPreOrder(node.right);
+        if(root.val == start) return root;
+        TreeNode left = findNode(root.left, start);
+        TreeNode right = findNode(root.right, start);
+        return left == null ? right : left;
     }
 }
-
-class TreeInfo {
-
-    int height;
-    int diameter;
-
-    TreeInfo(int height, int diameter){
-        this.height = height;
-        this.diameter = diameter;
-    }
-}
-
-class Node{
-    int data;
-    Node left;
-    Node right;
-
-    Node(int data){
-        this.data = data;
-    }
-}
-
-
-
