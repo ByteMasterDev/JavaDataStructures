@@ -17,6 +17,16 @@ public class BinaryTree {
         int[] array = {1, 2, 4, -1, -1, 5, -1, -1, 3, -1, 6, -1, -1};
         TreeNode tree = constructBinaryTreeFromArray(array);
 
+        /*
+        Tree structure based on the array {1, 2, 4, -1, -1, 5, -1, -1, 3, -1, 6, -1, -1}:
+                   1
+                  / \
+                 2   3
+                / \   \
+               4   5   6
+        */
+
+
         System.out.println("Preorder Traversal:");
         preOrderTraversal(tree);
         System.out.println();
@@ -110,6 +120,28 @@ public class BinaryTree {
         System.out.println("Amount of time for infection to spread from node " + startNode1 + ": " + amountOfTime(tree, startNode1));
         System.out.println("Amount of time for infection to spread from node " + startNode2 + ": " + amountOfTime(tree, startNode2));
         System.out.println("Amount of time for infection to spread from node " + startNode3 + ": " + amountOfTime(tree, startNode3));
+
+        List<Integer> boundary = boundaryOfBinaryTree(tree);
+        System.out.println("Boundary of the binary tree: " + boundary);
+
+        List<Integer> result = distanceK(tree, tree.left.right, 2);
+        System.out.println("Nodes at distance " + 2 + " from node " + tree.left.right.val + ": " + result);
+
+        // Add one row with value 10 at depth 3
+        tree = addOneRow(tree, 6, 3);
+        inOrderTraversal(tree);
+
+        int maxAncestorDiffResult = maxAncestorDiff(tree);
+        System.out.println("Maximum Ancestor Difference: " + maxAncestorDiffResult);
+
+        int findBottomLeftValueResult = findBottomLeftValue(tree);
+        System.out.println("Bottom Left Value: " + findBottomLeftValueResult);
+
+        System.out.println("Tree 1 and Tree 2 are the same: " + isSameTree(tree, tree)); // Expected: true
+
+        int maxDepthOfABinaryTree = maxDepthOfABinaryTree(tree);
+        System.out.println("Maximum depth of the binary tree: " + maxDepthOfABinaryTree);
+
     }
 
     static int idx = -1;
@@ -403,7 +435,7 @@ public class BinaryTree {
         return Math.max(leftHeight, rightHeight) + 1;
     }
 
-    /* A complete binary tree is a type of binary tree in which all levels are fully filled except possibly the last level.
+    /** A complete binary tree is a type of binary tree in which all levels are fully filled except possibly the last level.
         In the last level, nodes are filled from left to right without any gaps.
      */
 
@@ -614,5 +646,246 @@ public class BinaryTree {
         TreeNode left = findNode(root.left, start);
         TreeNode right = findNode(root.right, start);
         return left == null ? right : left;
+    }
+
+    // Leetcode: 1110 - Delete Nodes And Return Forest
+    static List<TreeNode> delNodes(TreeNode root, int[] to_delete) {
+        List<TreeNode> result = new ArrayList<>();
+        Set<Integer> set = new HashSet<>();
+        for(int val : to_delete){
+            set.add(val);
+        }
+
+        delNodesHelper(root, set, result);
+        return result;
+    }
+
+    static TreeNode delNodesHelper(TreeNode root, Set<Integer> set, List<TreeNode> result){
+        if(root == null) return null;
+        root.left = delNodesHelper(root.left, set, result);
+        root.right = delNodesHelper(root.right, set, result);
+        if(set.contains(root.val)){
+            if(root.left != null) result.add(root.left);
+            if(root.right != null) result.add(root.right);
+            return null;
+        }
+        return root;
+    }
+
+    // Leetcode: 545 - Boundary of Binary Tree
+    static  List<Integer> boundaryOfBinaryTree(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+
+        if(root == null) return result;
+        List<Integer> leftBoundaryWithoutLeaf = new ArrayList<>();
+        leftBoundaryWithoutLeaf(root.left, leftBoundaryWithoutLeaf);
+
+        List<Integer> leafnodes = new ArrayList<>();
+        leafNodes(root, leafnodes);
+
+        Stack<Integer> rightBoundaryWithoutLeaf = new Stack<>();
+        rightBoundaryWithoutLeafNode(root.right, rightBoundaryWithoutLeaf);
+
+        result.add(root.val);
+        result.addAll(leftBoundaryWithoutLeaf);
+        result.addAll(leafnodes);
+
+        while(!rightBoundaryWithoutLeaf.isEmpty()){
+            result.add(rightBoundaryWithoutLeaf.pop());
+        }
+
+        return result;
+    }
+
+     static void leftBoundaryWithoutLeaf(TreeNode root, List<Integer> leftBoundaryWithoutLeaf){
+        if(root == null) return;
+        if(root.left == null && root.right == null){
+            return;
+        }
+
+        leftBoundaryWithoutLeaf.add(root.val);
+        if(root.left == null){
+            leftBoundaryWithoutLeaf(root.right, leftBoundaryWithoutLeaf);
+        } else{
+            leftBoundaryWithoutLeaf(root.left, leftBoundaryWithoutLeaf);
+        }
+     }
+
+     static void leafNodes(TreeNode root, List<Integer> leafNodes){
+        if(root == null) return;
+        if(root.left == null && root.right == null){
+            leafNodes.add(root.val);
+
+        }
+        leafNodes(root.left, leafNodes);
+        leafNodes(root.right, leafNodes);
+     }
+
+     static void rightBoundaryWithoutLeafNode(TreeNode root, Stack<Integer> rightBoundaryWithoutLeaf) {
+        if(root == null) return;
+        if(root.left == null && root.right == null) return;
+         rightBoundaryWithoutLeaf.push(root.val);
+        if(root.right == null){
+            rightBoundaryWithoutLeafNode(root.left, rightBoundaryWithoutLeaf);
+        }else{
+            rightBoundaryWithoutLeafNode(root.right, rightBoundaryWithoutLeaf);
+        }
+     }
+
+     // Leetcode:863 - All Nodes Distance K in Binary Tree.
+     static List<Integer> distanceK(TreeNode root, TreeNode target, int k) {
+         Map<TreeNode, TreeNode> parentMap = new HashMap<>();
+         Set<TreeNode> visited = new HashSet<>();
+         buildParentMap(root, parentMap);
+         return distanceKHelper(target, k, visited, parentMap);
+     }
+
+    static List<Integer> distanceKHelper(TreeNode target, int k, Set<TreeNode> visited, Map<TreeNode, TreeNode> parentMap ){
+        List<Integer> result = new ArrayList<>();
+        if(target == null) return result;
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(target);
+
+        int level = 0;
+        while(!q.isEmpty()){
+            int qSize = q.size();
+            if (level == k) {
+                for (int i = 0; i < qSize; i++) {
+                    result.add(q.poll().val);
+                }
+                return result;
+            }
+
+            for(int i=0; i<qSize; i++){
+                TreeNode current = q.poll();
+                visited.add(current);
+
+                TreeNode parent = parentMap.get(current);
+                if(current.left != null && !visited.contains(current.left)) q.add(current.left);
+                if(current.right != null && !visited.contains(current.right)) q.add(current.right);
+                if(parent !=null && !visited.contains(parent)) q.add(parent);
+            }
+
+            level++;
+        }
+        return result;
+     }
+
+     // Leetcode: 623- Add One Row to Tree
+     static TreeNode addOneRow(TreeNode root, int val, int depth){
+
+        if(root == null) return null;
+         if (depth == 1) {
+             TreeNode newRoot = new TreeNode(val);
+             newRoot.left = root;
+             return newRoot;
+         }
+
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(root);
+
+        int currentLevel = 1;
+        while(!q.isEmpty()){
+            int qSize = q.size();
+            if(currentLevel == depth - 1){
+                while (!q.isEmpty()) {
+                    TreeNode current = q.poll();
+                    TreeNode newLeft = new TreeNode(val);
+                    TreeNode newRight = new TreeNode(val);
+
+                    newLeft.left = current.left;
+                    current.left = newLeft;
+
+                    newRight.right = current.right;
+                    current.right = newRight;
+                }
+                break;
+            }
+
+            for(int i=0; i<qSize; i++){
+                TreeNode current = q.poll();
+                if(current.left != null) q.add(current.left);
+                if(current.right != null) q.add(current.right);
+            }
+
+            currentLevel++;
+        }
+        return root;
+     }
+
+     // Leetcode: 1026 - Maximum Difference Between Node and Ancestor
+    static int maxAncestorDiff(TreeNode root) {
+        return maxAncestorDiffHelper(root, Integer.MAX_VALUE, Integer.MIN_VALUE);
+    }
+
+    static int maxAncestorDiffHelper(TreeNode root, int min, int max){
+        if(root == null) return Math.abs(max-min);
+
+        min = Math.min(min, root.val);
+        max = Math.max(max, root.val);
+
+        int leftDiff = maxAncestorDiffHelper(root.left, min, max);
+        int rightDiff = maxAncestorDiffHelper(root.right, min, max);
+        return Math.max(leftDiff, rightDiff);
+    }
+
+    // Leetcode: 513 - Find Bottom Left Tree Value
+    static int findBottomLeftValue(TreeNode root) {
+        if(root == null) return 0;
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(root);
+
+        int bottomLeftValue = root.val;
+
+        while(!q.isEmpty()){
+            int qSize = q.size();
+            for(int i=0; i<qSize; i++){
+                TreeNode current = q.poll();
+                if(i == 0){
+                    bottomLeftValue = current.val;
+                }
+                if(current.left != null) q.add(current.left);
+                if(current.right != null) q.add(current.right);
+            }
+
+        }
+        return bottomLeftValue;
+    }
+
+    //Leetcode: 100 - Same Tree
+    static boolean isSameTree(TreeNode p, TreeNode q){
+        if(p == null && q == null) return true;
+        if(p == null || q == null) return false;
+        return p.val == q.val
+                && isSameTree(p.left, q.left)
+                && isSameTree(p.right, q.right);
+
+    }
+
+    //Leetcode: 104 - Maximum Depth of Binary Tree
+    static int maxDepthOfABinaryTree(TreeNode root){
+        if(root == null) return 0;
+        int leftDepth = maxDepthOfABinaryTree(root.left);
+        int rightDepth = maxDepthOfABinaryTree(root.right);
+        return Math.max(leftDepth, rightDepth) + 1;
+    }
+
+    // Leetcode: 366 - Find Leaves of Binary Tree
+    static List<List<Integer>> findLeaves(TreeNode root){
+        List<List<Integer>> result = new ArrayList<>();
+        findLeavesHelper(root, result);
+        return result;
+    }
+
+    static int findLeavesHelper(TreeNode root, List<List<Integer>> result){
+        if(root == null) return -1;
+        int leftDepth = findLeavesHelper(root.left, result);
+        int rightDepth = findLeavesHelper(root.right, result);
+        int currentDepth = Math.max(leftDepth, rightDepth) + 1;
+        if(result.size() <= currentDepth){
+            result.add(new ArrayList<>());
+        }
+        result.get(currentDepth).add(root.val);
+        return currentDepth;
     }
 }
