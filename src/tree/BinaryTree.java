@@ -150,6 +150,8 @@ public class BinaryTree {
 
         flattenedLeaves.forEach(val -> System.out.println(val));
 
+        System.out.println(isEvenOddTree(tree));
+
     }
 
     static int idx = -1;
@@ -896,4 +898,42 @@ public class BinaryTree {
         result.get(currentDepth).add(root.val);
         return currentDepth;
     }
+
+    // Leetcode: 1609. Even Odd Tree
+    static boolean isEvenOddTree(TreeNode root) {
+        return evenOddTreeHelper(root);
+    }
+
+    static boolean evenOddTreeHelper(TreeNode root){
+        if(root == null) return true;
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(root);
+
+        int level = 0;
+        while(!q.isEmpty()){
+            int qSize = q.size();
+            Integer prev = null;
+            for(int i=0; i<qSize; i++){
+                TreeNode current = q.poll();
+                if(level % 2 == 0){
+                    if(current.val % 2 == 0 || (prev != null && prev >= current.val)){
+                        return false;
+                    }
+                }else {
+                    if((prev != null && prev <= current.val) || current.val % 2 != 0){
+                        return false;
+                    }
+                }
+
+                if (current.left != null) q.add(current.left);
+                if (current.right != null) q.add(current.right);
+                prev = current.val;
+            }
+            level++;
+
+        }
+
+        return true;
+    }
+
 }
