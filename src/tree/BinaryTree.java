@@ -10,6 +10,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class BinaryTree {
 
@@ -141,6 +142,13 @@ public class BinaryTree {
 
         int maxDepthOfABinaryTree = maxDepthOfABinaryTree(tree);
         System.out.println("Maximum depth of the binary tree: " + maxDepthOfABinaryTree);
+
+        // findLeaves -> Flatten the list of lists
+        List<Integer> flattenedLeaves = findLeaves(tree).stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+
+        flattenedLeaves.forEach(val -> System.out.println(val));
 
     }
 
