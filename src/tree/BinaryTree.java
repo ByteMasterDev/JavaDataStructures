@@ -1,6 +1,7 @@
 package tree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -151,6 +152,13 @@ public class BinaryTree {
         flattenedLeaves.forEach(val -> System.out.println(val));
 
         System.out.println(isEvenOddTree(tree));
+        System.out.println(isSymmetric(tree));
+        System.out.println(leafSimilar(tree, tree));
+        invertTree(tree);
+        Arrays.stream(findMode(tree)).forEach(val -> System.out.println(val));
+        removeLeafNodes(tree, 6);
+        mergeTrees(tree, tree);
+
 
     }
 
@@ -935,5 +943,149 @@ public class BinaryTree {
 
         return true;
     }
+
+    //Leetcode:101 - Symmetric Tree
+    static boolean isSymmetric(TreeNode root) {
+        if (root == null)
+            return true;
+        return isSymmetricHelper(root.left, root.right);
+
+    }
+
+    static boolean isSymmetricHelper(TreeNode leftTree, TreeNode rightTree) {
+        if (leftTree == null && rightTree == null)
+            return true;
+        if (leftTree == null || rightTree == null)
+            return false;
+        if (leftTree.val != rightTree.val)
+            return false;
+        return isSymmetricHelper(leftTree.right, rightTree.left)
+                && isSymmetricHelper(leftTree.left, rightTree.right);
+    }
+
+    //Leetcode: 872-Leaf-Similar Trees
+    static boolean leafSimilar(TreeNode root1, TreeNode root2) {
+        ArrayList<Integer> listOne = new ArrayList<>();
+        leafNodes(root1, listOne);
+
+        ArrayList<Integer> listTwo = new ArrayList<>();
+        leafNodes(root2, listTwo);
+
+        return listOne.equals(listTwo);
+    }
+
+    static TreeNode leafNodes(TreeNode root, ArrayList<Integer> list) {
+
+        if (root == null)
+            return null;
+        TreeNode left = leafNodes(root.left, list);
+        TreeNode right = leafNodes(root.right, list);
+
+        if (left == null && right == null) {
+            list.add(root.val);
+        }
+
+        return root;
+    }
+
+    //Leetcode: 226. Invert Binary Tree
+    static TreeNode invertTree(TreeNode root) {
+        if(root == null) return null;
+
+        TreeNode leftTree = invertTree(root.left);
+        TreeNode rightTree = invertTree(root.right);
+
+        root.left = rightTree;
+        root.right = leftTree;
+        return root;
+    }
+
+    //Leetcode: 501-Find Mode in Binary Search Tree
+    static int[] findMode(TreeNode root) {
+
+        HashMap<Integer, Integer> map = new HashMap<>();
+        findModeHelper(root, map);
+
+
+        int count = 0;
+        int result = 0;
+
+        for(Map.Entry<Integer, Integer> m : map.entrySet()){
+            if(m.getValue() > count){
+                count = m.getValue();
+                result = m.getKey();
+            }
+        }
+
+        int[] ans = new int[1];
+        ans[0] = result;
+
+        return ans;
+
+    }
+
+    static void findModeHelper(TreeNode root, HashMap<Integer, Integer> map){
+        if(root == null) return;
+        map.put(root.val, map.getOrDefault(root.val, 0) + 1);
+        findModeHelper(root.left, map);
+        findModeHelper(root.right, map);
+    }
+
+    //Leetcode: 1325 - Delete Leaves With a Given Value
+    static TreeNode removeLeafNodes(TreeNode root, int target) {
+        if (root == null)
+            return null;
+        root.left = removeLeafNodes(root.left, target);
+        root.right = removeLeafNodes(root.right, target);
+        if (root.val == target && root.left == null && root.right == null) {
+            return null;
+        }
+        return root;
+    }
+
+    //Leetcode: 617 - Merge Two Binary Trees
+    static TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+        if(root1 == null && root2 == null) return null;
+
+        Integer rootOneVal = root1 == null ? 0 : root1.val;
+        Integer rootTwoVal = root2 == null ? 0 : root2.val;
+
+        TreeNode root = new TreeNode(rootOneVal + rootTwoVal);
+        root.left = mergeTrees((root1 == null) ? null : root1.left,
+                (root2 == null) ? null : root2.left);
+        root.right = mergeTrees((root1 == null) ? null : root1.right,
+                (root2 == null) ? null : root2.right);
+        return root;
+    }
+
+    //Leetcode: 117 - Populating Next Right Pointers in Each Node II
+    /*public Node connect(Node root) {
+        if (root == null)
+            return null;
+
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+
+        while (!q.isEmpty()) {
+            int qSize = q.size();
+            Node prev = null;
+
+            for (int i = 0; i < qSize; i++) {
+                Node current = q.poll();
+                if (prev != null) {
+                    prev.next = current;
+                }
+
+                prev = current;
+                if (current.left != null)
+                    q.add(current.left);
+                if (current.right != null)
+                    q.add(current.right);
+            }
+            prev.next = null;
+        }
+        return root;
+
+    }*/
 
 }
