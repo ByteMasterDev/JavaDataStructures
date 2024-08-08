@@ -390,6 +390,7 @@ public class BinaryTree {
 
     }
 
+
     static TreeNode lcaNaive(TreeNode root, int valOne, int valTwo) {
         List<TreeNode> ancestorOne = new ArrayList<>();
         List<TreeNode> ancestorTwo = new ArrayList<>();
@@ -397,14 +398,16 @@ public class BinaryTree {
         if(!findPath(root, valOne, ancestorOne) || !findPath(root, valTwo, ancestorTwo)) return null;
 
         int min = Math.min(ancestorOne.size(), ancestorTwo.size());
-        for(int i=0; i<min-1; i++){
-            if(ancestorOne.get(i+1) != ancestorTwo.get(i+1)){
-                return ancestorOne.get(i);
+        TreeNode lca = null;
+        for(int i=0; i<min; i++){
+            if(ancestorOne.get(i) == ancestorTwo.get(i)){
+                lca = ancestorOne.get(i);
+            } else {
+                break;
             }
         }
 
-        return ancestorOne.get(min - 1);
-
+        return lca;
     }
 
     static boolean findPath(TreeNode root, int val, List<TreeNode> ancestors){
@@ -515,7 +518,7 @@ public class BinaryTree {
     // Leetcode: 297
     static String serialize(TreeNode root){
         if(root == null) return "n";
-        return String.valueOf(root.val) + "," +  serialize(root.left) + "," + serialize(root.right);
+        return root.val + "," +  serialize(root.left) + "," + serialize(root.right);
     }
 
     static TreeNode deserialize(String val){
